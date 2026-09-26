@@ -6,6 +6,8 @@ Slimme ventilatorkoeling voor je Zendure omvormer(s) in Home Assistant.
 
 Zendure-omvormers worden in de zomer flink warm. Een ventilator op een slimme stekker helpt, maar Devke Zendure Cool Guard doet meer dan alleen "aan boven X graden": het telt de draaiuren, waarschuwt wanneer de ventilator schoongemaakt moet worden en slaat alarm als de omvormer ondanks de koeling te warm wordt.
 
+> ⚠️ Gebruik op eigen risico – zie de [disclaimer](#disclaimer).
+
 ![Dashboard met de drie kaarten](screenshots/dashboard.png)
 
 *Bij een alarm: rode knipperende strook bovenin elk dashboard*
@@ -161,6 +163,16 @@ Vervang in alle bestanden (zoeken & vervangen):
 | Niets knippert | card-mod geïnstalleerd? Ctrl+F5? Juiste thema actief in je profiel? |
 | Ventilator gaat steeds aan en uit | "Uit onder" staat hoger dan "aan boven" |
 | Ventilatoren gaan direct aan na installatie | Stap 4 nog niet gedaan |
+
+---
+
+## Disclaimer
+
+**Gebruik op eigen risico.** Devke Zendure Cool Guard is een hobbyproject en wordt aangeboden zoals het is, zonder enige garantie. De maker is niet aansprakelijk voor schade aan apparatuur, woning of andere gevolgen van het gebruik.
+
+- Dit is **geen officieel product** van Zendure en is niet gelieerd aan Zendure of aan de maker van de Zendure-integratie.
+- Controleer zelf of alles bij jou goed werkt, en vertrouw niet blind op de automatisering of de meldingen.
+- Zorg dat ventilatoren en stekkers veilig zijn aangesloten en geschikt zijn voor de plek waar ze staan.
 
 ---
 
