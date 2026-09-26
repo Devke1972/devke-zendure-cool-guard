@@ -1,0 +1,102 @@
+# ==========================================
+#  Devke Zendure Cool Guard – package
+#  Bestand: config/packages/devke_coolguard.yaml
+#  https://github.com/Devke1972/devke-zendure-cool-guard
+# ==========================================
+
+input_number:
+  zendure_temp_min:
+    name: Cool Guard ventilator aan boven
+    min: 20
+    max: 70
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: box
+  zendure_temp_uit:
+    name: Cool Guard ventilator uit onder
+    min: 20
+    max: 70
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: box
+  zendure_temp_max:
+    name: Cool Guard alarm boven
+    min: 30
+    max: 90
+    step: 1
+    unit_of_measurement: "°C"
+    mode: box
+  zendure_ventilator_onderhoud_uren:
+    name: Cool Guard onderhoudsinterval
+    min: 1
+    max: 1000
+    step: 1
+    unit_of_measurement: h
+    mode: box
+  zendure_1_ventilator_uren:
+    name: Zendure 1 ventilator draaiuren
+    min: 0
+    max: 10000
+    step: 0.001
+    unit_of_measurement: h
+    mode: box
+  zendure_2_ventilator_uren:
+    name: Zendure 2 ventilator draaiuren
+    min: 0
+    max: 10000
+    step: 0.001
+    unit_of_measurement: h
+    mode: box
+
+input_button:
+  zendure_1_ventilator_reset:
+    name: Reset ventilator Zendure 1
+  zendure_2_ventilator_reset:
+    name: Reset ventilator Zendure 2
+
+input_datetime:
+  zendure_1_ventilator_schoongemaakt:
+    name: Zendure 1 ventilator schoongemaakt
+    has_date: true
+    has_time: true
+  zendure_2_ventilator_schoongemaakt:
+    name: Zendure 2 ventilator schoongemaakt
+    has_date: true
+    has_time: true
+
+template:
+  - binary_sensor:
+      - name: Zendure 1 onderhoud nodig
+        unique_id: zendure_1_onderhoud_nodig
+        icon: mdi:fan-alert
+        state: >
+          {{ states('input_number.zendure_1_ventilator_uren') | float(0)
+             >= states('input_number.zendure_ventilator_onderhoud_uren') | float(100) }}
+      - name: Zendure 2 onderhoud nodig
+        unique_id: zendure_2_onderhoud_nodig
+        icon: mdi:fan-alert
+        state: >
+          {{ states('input_number.zendure_2_ventilator_uren') | float(0)
+             >= states('input_number.zendure_ventilator_onderhoud_uren') | float(100) }}
+      - name: Zendure 1 te warm
+        unique_id: zendure_1_te_warm
+        device_class: heat
+        state: >
+          {{ states('sensor.zendure_2400_ac_omvormer_temperatuur') | float(0)
+             > states('input_number.zendure_temp_max') | float(45) }}
+      - name: Zendure 2 te warm
+        unique_id: zendure_2_te_warm
+        device_class: heat
+        state: >
+          {{ states('sensor.zendure_2_omvormer_temperatuur') | float(0)
+             > states('input_number.zendure_temp_max') | float(45) }}
+      - name: CoolGuard alarm
+        unique_id: coolguard_alarm
+        device_class: problem
+        icon: mdi:alert
+        state: >
+          {{ is_state('binary_sensor.zendure_1_onderhoud_nodig', 'on')
+             or is_state('binary_sensor.zendure_2_onderhoud_nodig', 'on')
+             or is_state('binary_sensor.zendure_1_te_warm', 'on')
+             or is_state('binary_sensor.zendure_2_te_warm', 'on') }}
+

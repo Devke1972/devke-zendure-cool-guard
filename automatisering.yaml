@@ -1,0 +1,153 @@
+# ==========================================
+#  Devke Zendure Cool Guard – automatisering
+#  Instellingen -> Automatiseringen -> + Automatisering maken -> Nieuwe automatisering
+#  -> ⋮ -> Bewerken in YAML -> alles vervangen door onderstaande -> Opslaan
+# ==========================================
+
+alias: Devke Zendure Cool Guard
+description: Koeling, draaiuren, onderhoudsmelding en oververhittingsalarm voor Zendure 1 en 2
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.zendure_2400_ac_omvormer_temperatuur
+      - sensor.zendure_2_omvormer_temperatuur
+      - input_number.zendure_temp_min
+      - input_number.zendure_temp_uit
+    id: regel
+  - trigger: homeassistant
+    event: start
+    id: regel
+  - trigger: time_pattern
+    minutes: /1
+    id: tel
+  - trigger: numeric_state
+    entity_id: input_number.zendure_1_ventilator_uren
+    above: input_number.zendure_ventilator_onderhoud_uren
+    id: melding_1
+  - trigger: numeric_state
+    entity_id: input_number.zendure_2_ventilator_uren
+    above: input_number.zendure_ventilator_onderhoud_uren
+    id: melding_2
+  - trigger: numeric_state
+    entity_id: sensor.zendure_2400_ac_omvormer_temperatuur
+    above: input_number.zendure_temp_max
+    for: "00:10:00"
+    id: alarm_1
+  - trigger: numeric_state
+    entity_id: sensor.zendure_2_omvormer_temperatuur
+    above: input_number.zendure_temp_max
+    for: "00:10:00"
+    id: alarm_2
+  - trigger: state
+    entity_id: input_button.zendure_1_ventilator_reset
+    not_from: [unknown, unavailable]
+    id: reset_1
+  - trigger: state
+    entity_id: input_button.zendure_2_ventilator_reset
+    not_from: [unknown, unavailable]
+    id: reset_2
+actions:
+  - variables:
+      aan: "{{ states('input_number.zendure_temp_min') | float(35) }}"
+      uit: "{{ states('input_number.zendure_temp_uit') | float(35) }}"
+      nr: "{{ trigger.id[-1] }}"
+      sets:
+        - sensor: sensor.zendure_2400_ac_omvormer_temperatuur
+          fan: switch.zendure_ventilator_3
+          teller: input_number.zendure_1_ventilator_uren
+        - sensor: sensor.zendure_2_omvormer_temperatuur
+          fan: switch.hw_batterij_socket_1_8
+          teller: input_number.zendure_2_ventilator_uren
+  - choose:
+      # Koelen + draaiuren tellen
+      - conditions:
+          - condition: trigger
+            id: [regel, tel]
+        sequence:
+          - repeat:
+              for_each: "{{ sets }}"
+              sequence:
+                - variables:
+                    t: "{{ states(repeat.item.sensor) }}"
+                - choose:
+                    # Failsafe: sensor weg -> ventilator aan
+                    - conditions:
+                        - condition: template
+                          value_template: "{{ not is_number(t) and is_state(repeat.item.fan, 'off') }}"
+                      sequence:
+                        - action: switch.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.fan }}"
+                    - conditions:
+                        - condition: template
+                          value_template: "{{ is_number(t) and t | float > aan and is_state(repeat.item.fan, 'off') }}"
+                      sequence:
+                        - action: switch.turn_on
+                          target:
+                            entity_id: "{{ repeat.item.fan }}"
+                    - conditions:
+                        - condition: template
+                          value_template: "{{ is_number(t) and t | float < uit and is_state(repeat.item.fan, 'on') }}"
+                      sequence:
+                        - action: switch.turn_off
+                          target:
+                            entity_id: "{{ repeat.item.fan }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ trigger.id == 'tel' and is_state(repeat.item.fan, 'on') }}"
+                  then:
+                    - action: input_number.set_value
+                      target:
+                        entity_id: "{{ repeat.item.teller }}"
+                      data:
+                        value: "{{ (states(repeat.item.teller) | float(0) + 1/60) | round(3) }}"
+
+      # Onderhoudsmelding
+      - conditions:
+          - condition: trigger
+            id: [melding_1, melding_2]
+        sequence:
+          - action: persistent_notification.create
+            data:
+              notification_id: "zendure_ventilator_{{ nr }}"
+              title: "Zendure {{ nr }}: ventilator controleren"
+              message: >
+                De ventilator van Zendure {{ nr }} heeft meer dan
+                {{ states('input_number.zendure_ventilator_onderhoud_uren') | int }} uur gedraaid.
+                Controleer hem op stof en druk daarna op de resetknop.
+
+      # Oververhittingsalarm
+      - conditions:
+          - condition: trigger
+            id: [alarm_1, alarm_2]
+        sequence:
+          - action: persistent_notification.create
+            data:
+              notification_id: "zendure_alarm_{{ nr }}"
+              title: "Zendure {{ nr }}: te warm!"
+              message: >
+                De omvormer van Zendure {{ nr }} is al 10 minuten boven
+                {{ states('input_number.zendure_temp_max') | int }} °C
+                (nu {{ trigger.to_state.state }} °C). Controleer of de ventilator
+                draait en de stekker aan staat.
+
+      # Reset na schoonmaken
+      - conditions:
+          - condition: trigger
+            id: [reset_1, reset_2]
+        sequence:
+          - action: input_number.set_value
+            target:
+              entity_id: "input_number.zendure_{{ nr }}_ventilator_uren"
+            data:
+              value: 0
+          - action: input_datetime.set_datetime
+            target:
+              entity_id: "input_datetime.zendure_{{ nr }}_ventilator_schoongemaakt"
+            data:
+              timestamp: "{{ now().timestamp() }}"
+          - action: persistent_notification.dismiss
+            data:
+              notification_id: "zendure_ventilator_{{ nr }}"
+mode: queued
+max: 10

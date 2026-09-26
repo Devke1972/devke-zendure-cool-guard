@@ -1,0 +1,68 @@
+# ==========================================
+#  Devke Zendure Cool Guard – alarmblok voor je eigen thema (Graphite of ander thema)
+#  Plak dit DIRECT onder de regel met de themanaam (bijv. "Graphite:").
+#  Vervang JOUW_THEMA_NAAM door exact de naam van je thema.
+#  Staat "card-mod-theme:" al elders in je thema? Haal die regel daar weg.
+#  Vereist: card-mod (HACS)
+# ==========================================
+
+  card-mod-theme: JOUW_THEMA_NAAM
+
+  # Rode knipperende alarmstrook onder de kopbalk met de alarmtekst
+  card-mod-root: |
+    {% if is_state('binary_sensor.coolguard_alarm', 'on') %}
+    {% set m = namespace(t=[]) %}
+    {% set max = states('input_number.zendure_temp_max') | float(45) %}
+    {% if states('sensor.zendure_2400_ac_omvormer_temperatuur') | float(0) > max %}
+      {% set m.t = m.t + ['Zendure 1 te warm (' ~ states('sensor.zendure_2400_ac_omvormer_temperatuur') ~ ' °C)'] %}
+    {% endif %}
+    {% if states('sensor.zendure_2_omvormer_temperatuur') | float(0) > max %}
+      {% set m.t = m.t + ['Zendure 2 te warm (' ~ states('sensor.zendure_2_omvormer_temperatuur') ~ ' °C)'] %}
+    {% endif %}
+    {% if is_state('binary_sensor.zendure_1_onderhoud_nodig', 'on') %}
+      {% set m.t = m.t + ['Zendure 1 ventilator schoonmaken'] %}
+    {% endif %}
+    {% if is_state('binary_sensor.zendure_2_onderhoud_nodig', 'on') %}
+      {% set m.t = m.t + ['Zendure 2 ventilator schoonmaken'] %}
+    {% endif %}
+    .header {
+      flex-wrap: wrap;
+    }
+    .header::after {
+      content: "⚠  ALARM: {{ (m.t | join('  ·  ') if m.t else 'zie Alarmen-dashboard') | replace('"', '') }}";
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      height: 32px;
+      line-height: 32px;
+      padding: 0 16px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 15px;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      animation: devke-alarm 1.5s ease-in-out infinite;
+    }
+    @keyframes devke-alarm {
+      0%, 100% { background-color: rgba(219, 68, 55, 0.55); }
+      50% { background-color: var(--error-color); }
+    }
+    #view {
+      padding-top: calc(var(--header-height) + 32px + 20px + env(safe-area-inset-top)) !important;
+    }
+    {% endif %}
+
+  # Menu-item van het alarmdashboard knippert in de zijbalk
+  card-mod-sidebar: |
+    {% if is_state('binary_sensor.coolguard_alarm', 'on') %}
+    a[href="/dashboard-alarmen"] {
+      border-radius: 8px;
+      animation: devke-alarm-menu 1.5s ease-in-out infinite;
+    }
+    @keyframes devke-alarm-menu {
+      0%, 100% { background-color: transparent; }
+      50% { background-color: rgba(219, 68, 55, 0.45); }
+    }
+    {% endif %}
