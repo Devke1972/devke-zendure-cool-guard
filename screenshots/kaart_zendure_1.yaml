@@ -1,0 +1,22 @@
+# Dashboard -> potlood -> + Kaart toevoegen -> Handmatig -> plakken -> Opslaan
+type: entities
+title: Zendure 1
+icon: mdi:home-battery
+show_header_toggle: false
+entities:
+  - entity: sensor.zendure_2400_ac_omvormer_temperatuur
+    name: Temperatuur
+  - entity: switch.zendure_ventilator_3
+    name: Ventilator
+    icon: mdi:fan
+  - entity: input_number.zendure_1_ventilator_uren
+    name: Draaiuren
+    icon: mdi:timer-outline
+    type: simple-entity
+  - entity: input_datetime.zendure_1_ventilator_schoongemaakt
+    name: Schoongemaakt
+    icon: mdi:broom
+    type: simple-entity
+  - entity: input_button.zendure_1_ventilator_reset
+    name: Reset teller
+    icon: mdi:restart

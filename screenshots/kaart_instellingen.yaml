@@ -1,0 +1,18 @@
+# Dashboard -> potlood -> + Kaart toevoegen -> Handmatig -> plakken -> Opslaan
+type: entities
+title: Devke Zendure Cool Guard
+icon: mdi:cog
+show_header_toggle: false
+entities:
+  - entity: input_number.zendure_temp_min
+    name: Aan boven
+    icon: mdi:fan-chevron-up
+  - entity: input_number.zendure_temp_uit
+    name: Uit onder
+    icon: mdi:fan-chevron-down
+  - entity: input_number.zendure_temp_max
+    name: Alarm boven
+    icon: mdi:thermometer-alert
+  - entity: input_number.zendure_ventilator_onderhoud_uren
+    name: Onderhoud na
+    icon: mdi:wrench-clock
