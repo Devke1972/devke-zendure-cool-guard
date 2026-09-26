@@ -60,6 +60,10 @@ Daarna: **Ontwikkelhulpmiddelen → YAML → Configuratie controleren → HA her
 ### Stap 3 – Automatisering
 **Instellingen → Automatiseringen → + Automatisering maken → Nieuwe automatisering → ⋮ → Bewerken in YAML**, alles vervangen door de inhoud van [`automatisering.yaml`](automatisering.yaml) en opslaan.
 
+   Meldingen verschijnen bij het belletje in de zijbalk:
+
+   ![Melding](screenshots/melding.png)
+
 ### Stap 4 – Waarden instellen (meteen doen!)
 Nieuwe helpers starten op hun minimumwaarde. Zet ze direct goed:
 
