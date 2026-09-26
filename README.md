@@ -29,7 +29,7 @@ Zendure-omvormers worden in de zomer flink warm. Een ventilator op een slimme st
 ## Wat heb je nodig?
 
 - Home Assistant 2024.10 of nieuwer
-- Zendure-integratie met een temperatuursensor van de omvormer
+- **De Zendure-integratie van Gielz: [Zendure-HA-zenSDK](https://github.com/Gielz1986/Zendure-HA-zenSDK)** – Cool Guard gebruikt daaruit de omvormertemperatuur (bijv. `sensor.zendure_2400_ac_omvormer_temperatuur`)
 - Per Zendure een ventilator op een schakelbare stekker (`switch`)
 - File editor add-on (of Studio Code Server)
 - [card-mod](https://github.com/thomasloven/lovelace-card-mod) via HACS – alleen voor de alarmstrook
@@ -119,6 +119,8 @@ Home Assistant gebruikt maar één thema tegelijk, dus het alarm moet in het the
 ## Aanpassen voor jouw situatie
 
 ### Andere entiteiten
+De temperatuursensoren komen uit de [Zendure-integratie van Gielz](https://github.com/Gielz1986/Zendure-HA-zenSDK). Hoe ze bij jou heten, zie je bij **Instellingen → Apparaten & diensten → Zendure** (of zoek op `omvormer_temperatuur` bij Ontwikkelhulpmiddelen → Statussen).
+
 Vervang in alle bestanden (zoeken & vervangen):
 
 | Van | Naar |
