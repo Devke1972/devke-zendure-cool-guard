@@ -1,13 +1,17 @@
+<img src="images/DevkeCoolGuard.png" width="1000" height="400">
+
 # Devke Zendure Cool Guard
 
 Slimme ventilatorkoeling voor je Zendure omvormer(s) in Home Assistant.
 
 Zendure-omvormers worden in de zomer flink warm. Een ventilator op een slimme stekker helpt, maar Devke Zendure Cool Guard doet meer dan alleen "aan boven X graden": het telt de draaiuren, waarschuwt wanneer de ventilator schoongemaakt moet worden en slaat alarm als de omvormer ondanks de koeling te warm wordt.
-   ![Dashboard](screenshots/dashboard.png)
 
-   *Bij een alarm: rode knipperende strook bovenin elk dashboard*
+![Dashboard met de drie kaarten](screenshots/dashboard.png)
 
-   ![Alarmstrook](screenshots/alarmstrook.png)
+*Bij een alarm: rode knipperende strook bovenin elk dashboard*
+
+![Alarmstrook](screenshots/alarmstrook.png)
+
 ---
 
 ## Features
@@ -39,6 +43,8 @@ Zendure-omvormers worden in de zomer flink warm. Een ventilator op een slimme st
 | `dashboard/kaart_*.yaml` | Drie dashboardkaarten: instellingen, Zendure 1, Zendure 2 |
 | `thema/alarm_blok.yaml` | Alarmstrook voor je eigen thema (Graphite of ander thema) |
 | `thema/devke_cool_guard.yaml` | Compleet thema voor wie het standaardthema gebruikt |
+| `images/` | Banner (visitekaartje) |
+| `screenshots/` | Afbeeldingen voor deze README |
 
 ---
 
@@ -60,9 +66,9 @@ Daarna: **Ontwikkelhulpmiddelen → YAML → Configuratie controleren → HA her
 ### Stap 3 – Automatisering
 **Instellingen → Automatiseringen → + Automatisering maken → Nieuwe automatisering → ⋮ → Bewerken in YAML**, alles vervangen door de inhoud van [`automatisering.yaml`](automatisering.yaml) en opslaan.
 
-   Meldingen verschijnen bij het belletje in de zijbalk:
+Meldingen verschijnen bij het belletje in de zijbalk:
 
-   ![Melding](screenshots/melding.png)
+![Melding](screenshots/melding.png)
 
 ### Stap 4 – Waarden instellen (meteen doen!)
 Nieuwe helpers starten op hun minimumwaarde. Zet ze direct goed:
@@ -77,8 +83,12 @@ Nieuwe helpers starten op hun minimumwaarde. Zet ze direct goed:
 ### Stap 5 – Dashboard
 Maak een dashboard **Alarmen** aan (**Instellingen → Dashboards → + Dashboard toevoegen → Nieuw dashboard vanaf nul**). Voeg via **+ Kaart toevoegen → Handmatig** de drie kaarten uit de map [`dashboard`](dashboard) toe.
 
+![Dashboard](screenshots/dashboard.png)
+
 ### Stap 6 (optioneel) – Alarmstrook bovenin elk dashboard
 Bij een alarm verschijnt op elk dashboard een rode knipperende strook met bijv. *"ALARM: Zendure 1 te warm (47 °C)"*, en knippert het menu-item van je Alarmen-dashboard.
+
+![Alarmstrook](screenshots/alarmstrook.png)
 
 Home Assistant gebruikt maar één thema tegelijk, dus het alarm moet in het thema dat jij gebruikt:
 
